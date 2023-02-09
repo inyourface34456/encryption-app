@@ -13,6 +13,7 @@ async fn brow_entry() -> Result<NamedFile, std::io::Error> {
 #[post("/encrypt", data="<private>")]
 async fn encrypt(private: &str) -> String {
     let keypair = Rsa::generate(2048).unwrap();
+    
     let keypair = PKey::from_rsa(keypair).unwrap();
     let data = private.as_bytes();
 
