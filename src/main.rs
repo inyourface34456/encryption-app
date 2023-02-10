@@ -3,7 +3,7 @@ use rocket::http::ContentType;
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
-use rocket::response::content::RawText;
+use rocket::response::content::{RawText, RawHtml};
 use openssl::pkey::PKey;
 use rocket::tokio::fs::File;
 use rocket::{fs::NamedFile, get};
@@ -34,9 +34,9 @@ async fn encrypt(private: &str) -> String {
     general_purpose::URL_SAFE_NO_PAD.encode(&encrypted)
 }
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+#[get("/<folder_name>")]
+async fn index(folder_name: String) -> Option<RawHtml<File>> {
+    File::open(format!("/workspaces/codespaces-blank/encryption-app/src/static/{}/index.html", folder_name)).await.map(RawHtml).ok()
 }
 #[get("/<folder_name>/<file_name>")]
 async fn get_sheets(folder_name: String, file_name: String) -> Option<RawText<File>> {
