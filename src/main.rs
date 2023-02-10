@@ -7,7 +7,7 @@ use rocket::{fs::NamedFile, get};
 
 #[get("/encrypt")]
 async fn brow_entry() -> Result<NamedFile, std::io::Error> {
-   NamedFile::open("/workspaces/codespaces-blank/encryption-app/src/static/index.html").await
+   NamedFile::open("/workspaces/codespaces-blank/encryption-app/src/static/encrypt/index.html").await
 }
 
 #[post("/encrypt", data="<private>")]
