@@ -31,7 +31,7 @@
                     document.getElementById('link').innerHTML = `${this.responseText}`;
                 }
             };
-            request.open('POST', 'http://localhost:8000/encrypt', true);
+            request.open('POST', '/encrypt', true);
             request.send(params);
         };
         </script>
