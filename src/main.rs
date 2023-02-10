@@ -1,4 +1,5 @@
 #[macro_use] extern crate rocket;
+mod id_sys;
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
@@ -6,6 +7,7 @@ use rocket::response::content::{RawText, RawHtml};
 use openssl::pkey::PKey;
 use rocket::tokio::fs::File;
 use rocket::get;
+use id_sys::PasteId;
 
 // https://api.rocket.rs/v0.5-rc/rocket/http/struct.ContentType.html
 /*
@@ -18,9 +20,11 @@ find out how to zip them together as one download
 */
 #[post("/encrypt", data="<private>")]
 async fn encrypt(private: &str) -> String {
+    let private: Vec<&str> = private.split("{delimanator}").collect();
     let keypair = Rsa::generate(2048).unwrap();
     let keypair = PKey::from_rsa(keypair).unwrap();
-    let data = private.as_bytes();
+    let data = private[0].as_bytes();
+    PasteID.new(private[1]);
 
     // Encrypt the data with RSA PKCS1
     let mut encrypter = Encrypter::new(&keypair).unwrap();
@@ -32,7 +36,8 @@ async fn encrypt(private: &str) -> String {
     let encrypted_len = encrypter.encrypt(data, &mut encrypted).unwrap();
     encrypted.truncate(encrypted_len);
     // let s = String::from_utf8_lossy(&encrypted);
-    general_purpose::URL_SAFE_NO_PAD.encode(&encrypted)
+    general_purpose::URL_SAFE_NO_PAD.encode(&encrypted) 
+
 }
 
 #[get("/<folder_name>")]

@@ -1,7 +1,6 @@
 // this is all from the rocket example for a cheep pastebin clone.
 use std::borrow::Cow;
 use std::path::{Path, PathBuf};
-use rand::{self, Rng};
 use rocket::request::FromParam;
 
 /// A _probably_ unique paste ID.
@@ -14,9 +13,7 @@ impl PasteId<'_> {
     /// probability of a collision depends on the value of `size` and the number
     /// of IDs generated thus far.
     pub fn new(pass: String) -> PasteId<'static> {
-        let mut id = String::from(pass);
-        let mut rng = rand::thread_rng();
-        
+        let id = String::from(pass);        
         PasteId(Cow::Owned(id))
     }
 
