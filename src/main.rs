@@ -1,5 +1,6 @@
 #[macro_use] extern crate rocket;
 mod id_sys;
+use std::io::Write;
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
@@ -24,8 +25,14 @@ async fn encrypt(private: &str) -> String {
     let keypair = Rsa::generate(2048).unwrap();
     let keypair = PKey::from_rsa(keypair).unwrap();
     let data = private[0].as_bytes();
-    PasteID.new(private[1]);
-
+    let password = PasteId::new(private[1].to_string());
+    let path = String::from(format!("{:?}", password.file_path()));
+    
+    let mut file = std::fs::File::create(format!("{}/priv.key", path)).expect("create failed");
+    file.write_all(String::from_utf8_lossy(&keypair.private_key_to_pem_pkcs8().unwrap()).as_bytes()).expect("write failed");
+    let mut file = std::fs::File::create(format!("{}/pub.key", path)).expect("create failed");
+    file.write_all(String::from_utf8_lossy(&keypair.public_key_to_pem().unwrap()).as_bytes()).expect("write failed");
+    
     // Encrypt the data with RSA PKCS1
     let mut encrypter = Encrypter::new(&keypair).unwrap();
     encrypter.set_rsa_padding(Padding::PKCS1).unwrap();
@@ -36,8 +43,7 @@ async fn encrypt(private: &str) -> String {
     let encrypted_len = encrypter.encrypt(data, &mut encrypted).unwrap();
     encrypted.truncate(encrypted_len);
     // let s = String::from_utf8_lossy(&encrypted);
-    general_purpose::URL_SAFE_NO_PAD.encode(&encrypted) 
-
+    general_purpose::URL_SAFE_NO_PAD.encode(&encrypted)
 }
 
 #[get("/<folder_name>")]
