@@ -2,7 +2,9 @@
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
+use rocket::response::content::RawText;
 use openssl::pkey::PKey;
+use rocket::tokio::fs::File;
 use rocket::{fs::NamedFile, get};
 
 #[get("/encrypt")]
@@ -34,8 +36,13 @@ async fn encrypt(private: &str) -> String {
 fn index() -> &'static str {
     "Hello, world!"
 }
+#[get("/<folder_name>/<file_name>")]
+async fn get_sheets(folder_name: String, file_name: String) -> Option<RawText<File>> {
+    File::open(format!("/workspaces/codespaces-blank/encryption-app/src/static/{}/{}", folder_name, file_name)).await.map(RawText).ok()
+}
+
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, encrypt, brow_entry])
+    rocket::build().mount("/", routes![index, encrypt, brow_entry, get_sheets])
 }
