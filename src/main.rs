@@ -1,4 +1,5 @@
 #[macro_use] extern crate rocket;
+use rocket::http::ContentType;
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
@@ -7,6 +8,7 @@ use openssl::pkey::PKey;
 use rocket::tokio::fs::File;
 use rocket::{fs::NamedFile, get};
 
+// https://api.rocket.rs/v0.5-rc/rocket/http/struct.ContentType.html
 #[get("/encrypt")]
 async fn brow_entry() -> Result<NamedFile, std::io::Error> {
    NamedFile::open("/workspaces/codespaces-blank/encryption-app/src/static/encrypt/index.html").await
