@@ -1,23 +1,24 @@
 #[macro_use] extern crate rocket;
-use rocket::http::ContentType;
 use base64::{Engine as _, engine::general_purpose};
 use openssl::encrypt::{Encrypter, Decrypter};
 use openssl::rsa::{Rsa, Padding};
 use rocket::response::content::{RawText, RawHtml};
 use openssl::pkey::PKey;
 use rocket::tokio::fs::File;
-use rocket::{fs::NamedFile, get};
+use rocket::get;
 
 // https://api.rocket.rs/v0.5-rc/rocket/http/struct.ContentType.html
-#[get("/encrypt")]
-async fn brow_entry() -> Result<NamedFile, std::io::Error> {
-   NamedFile::open("/workspaces/codespaces-blank/encryption-app/src/static/encrypt/index.html").await
-}
-
+/*
+todo:
+get the private key as a pkcs8
+get the public key from pkcs8
+write them to two seprate files
+show them to the user as a download (not copy and paste)
+find out how to zip them together as one download
+*/
 #[post("/encrypt", data="<private>")]
 async fn encrypt(private: &str) -> String {
     let keypair = Rsa::generate(2048).unwrap();
-    
     let keypair = PKey::from_rsa(keypair).unwrap();
     let data = private.as_bytes();
 
@@ -46,5 +47,5 @@ async fn get_sheets(folder_name: String, file_name: String) -> Option<RawText<Fi
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, encrypt, brow_entry, get_sheets])
+    rocket::build().mount("/", routes![index, encrypt, get_sheets])
 }
