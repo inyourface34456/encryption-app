@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>
+            Encrypt
+        </title>
+        <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAACXBIWXMAAAsTAAALEwEAmpwYAAAASUlEQVR4nE3M0QmAQAwE0YeihVjICX5di9eGrdiCfSjReLgwsJmF8GbGlkzpnqwYMKJ8csGOlkQPp+LCmUQP14cj6UP8jONPuQFLVRDuAU6wCgAAAABJRU5ErkJggg==" type="image/png" sizes="64x64">
+        <style>
+        textarea {
+            width: 100%;
+            height: 75%;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        </style>
+    </head>
+    <body>
+        <textarea id="myTextarea" rows='30' maxlength='393216'>Enter encrypted text here...</textarea>
+        <p>Pasword: </p><input type="password" id = "password"></input>
+        <br>
+        <button type='button' id="submit">Upload</button>
+        <br>
+        <div id='link'></div>
+        <script>
+            document.getElementById("submit").onclick = function() {
+                var dlim = "{delimanator}";
+                var request = new XMLHttpRequest();
+                var params = `${document.getElementById('myTextarea').value}${dlim}${document.getElementById('password').value}`;
+                request.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        document.getElementById('link').innerHTML = `${this.responseText}`;
+                    }
+                };
+                request.open('POST', '/decrypt', true);
+                request.send(params);
+        };
+        </script>
+    </body>
+</html>
