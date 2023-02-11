@@ -25,8 +25,6 @@ async fn encrypt(private: &str) -> String {
     let keypair = Rsa::generate(2048).unwrap();
     let keypair = PKey::from_rsa(keypair).unwrap();
     let data = private[0].as_bytes();
-    let password = PasteId::new(private[1].to_string());
-    let path = String::from(format!("{:?}", password.file_path()));
     
     let mut file = std::fs::File::create(format!("/workspaces/codespaces-blank/encryption-app/src/keys/{}priv.key", private[0])).expect("create failed");
     file.write_all(String::from_utf8_lossy(&keypair.private_key_to_pem_pkcs8().unwrap()).as_bytes()).expect("write failed");
@@ -40,9 +38,9 @@ async fn encrypt(private: &str) -> String {
     let buffer_len = encrypter.encrypt_len(data).unwrap();
     let mut encrypted = vec![0; buffer_len];
     // Encrypt and truncate the buffer
-    let encrypted_len = encrypter.encrypt(data, &mut encrypted).unwrap();
+    let encrypted_len = encrypter.encrypt(data, &mut encrypted).unwrap(); 
     encrypted.truncate(encrypted_len);
-    // let s = String::from_utf8_lossy(&encrypted);
+    // let s = String::from_utf8_lossy(&encrypted);\
     general_purpose::URL_SAFE_NO_PAD.encode(&encrypted)
 }
 
