@@ -8,7 +8,6 @@ use rocket::response::content::{RawText, RawHtml};
 use openssl::pkey::PKey;
 use rocket::tokio::fs::File;
 use rocket::get;
-use id_sys::PasteId;
 
 // https://api.rocket.rs/v0.5-rc/rocket/http/struct.ContentType.html
 /*
